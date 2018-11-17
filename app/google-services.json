@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "765794740327",
+    "firebase_url": "https://universalcounter-dced9.firebaseio.com",
+    "project_id": "universalcounter-dced9",
+    "storage_bucket": "universalcounter-dced9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:765794740327:android:5e122447437dd3f7",
+        "android_client_info": {
+          "package_name": "info.hntr.universalcounter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "765794740327-golpor11ljuddmftatc4g2012vma1vp5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPXJ68DYKdNneHyChAeogU5FqJ8iZuwzg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
