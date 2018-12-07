@@ -121,7 +121,7 @@ class GoogleSignInActivity : Activity(), View.OnClickListener {
 
     // [START signin]
     private fun signIn() {
-        val signInIntent = googleSignInClient.signInIntent
+        //val signInIntent = googleSignInClient.signInIntent
         //startActivityForResult(signInIntent, RC_SIGN_IN)
     }
     // [END signin]
