@@ -22,6 +22,9 @@ import kotlinx.android.synthetic.main.activity_google_sign_in.signInButton
 import kotlinx.android.synthetic.main.activity_google_sign_in.signOutAndDisconnect
 import kotlinx.android.synthetic.main.activity_google_sign_in.signOutButton
 import kotlinx.android.synthetic.main.activity_google_sign_in.status
+import android.app.ProgressDialog
+
+
 
 /**
  * Demonstrate Firebase Authentication using a Google ID Token.
@@ -94,7 +97,7 @@ class GoogleSignInActivity : Activity(), View.OnClickListener {
     private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.id!!)
         // [START_EXCLUDE silent]
-        // showProgressDialog()
+        showProgressDialog()
         // [END_EXCLUDE]
 
         val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
@@ -113,7 +116,7 @@ class GoogleSignInActivity : Activity(), View.OnClickListener {
                 }
 
                 // [START_EXCLUDE]
-                //hideProgressDialog()
+                hideProgressDialog()
                 // [END_EXCLUDE]
             }
     }
@@ -121,8 +124,8 @@ class GoogleSignInActivity : Activity(), View.OnClickListener {
 
     // [START signin]
     private fun signIn() {
-        //val signInIntent = googleSignInClient.signInIntent
-        //startActivityForResult(signInIntent, RC_SIGN_IN)
+        val signInIntent = googleSignInClient.signInIntent
+        startActivityForResult(signInIntent, RC_SIGN_IN)
     }
     // [END signin]
 
@@ -147,7 +150,7 @@ class GoogleSignInActivity : Activity(), View.OnClickListener {
     }
 
     private fun updateUI(user: FirebaseUser?) {
-        //hideProgressDialog()
+        hideProgressDialog()
         if (user != null) {
             //status.text = getString(R.string.google_status_fmt, user.email)
             //detail.text = getString(R.string.firebase_status_fmt, user.uid)
@@ -170,6 +173,28 @@ class GoogleSignInActivity : Activity(), View.OnClickListener {
             R.id.signOutButton -> signOut()
             R.id.disconnectButton -> revokeAccess()
         }
+    }
+
+    private var mProgressDialog: ProgressDialog? = null
+
+    fun showProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = ProgressDialog(this)
+            mProgressDialog!!.setCancelable(false)
+            mProgressDialog!!.setMessage("Loading...")
+        }
+
+        mProgressDialog!!.show()
+    }
+
+    fun hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog!!.isShowing) {
+            mProgressDialog!!.dismiss()
+        }
+    }
+
+    fun getUid(): String {
+        return FirebaseAuth.getInstance().currentUser!!.uid
     }
 
     companion object {
