@@ -5,14 +5,8 @@ import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
 import kotlinx.android.synthetic.main.activity_main.*
-import java.lang.Exception
-
 
 class MainActivity : Activity(), View.OnClickListener {
 
@@ -32,6 +26,7 @@ class MainActivity : Activity(), View.OnClickListener {
         db.setFirestoreSettings(settings)
 
         setupListener()
+        setupRxSource()
     }
 
     override fun onStart() {
@@ -87,5 +82,20 @@ class MainActivity : Activity(), View.OnClickListener {
                 return@EventListener
             }
         })
+    }
+
+    fun setupRxSource() {
+        val ref = db.collection("users")
+        ref.observeValueSnapshot()
+            .flatMapIterable { snapshot -> snapshot.documentChanges }
+            .subscribe {
+                x -> when(x.type) {
+                    DocumentChange.Type.ADDED -> addWidget(x.document)
+                }
+            }
+    }
+
+    private fun addWidget(doc : QueryDocumentSnapshot) {
+        Log.d(TAG, "Got document: ${doc.id}")
     }
 }
