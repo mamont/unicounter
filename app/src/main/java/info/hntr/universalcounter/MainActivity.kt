@@ -9,12 +9,9 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.Exception
-import com.google.firebase.firestore.FirebaseFirestoreSettings
-import com.google.firebase.firestore.QuerySnapshot
 
 
 class MainActivity : Activity(), View.OnClickListener {
@@ -33,6 +30,8 @@ class MainActivity : Activity(), View.OnClickListener {
             .setTimestampsInSnapshotsEnabled(true)
             .build()
         db.setFirestoreSettings(settings)
+
+        setupListener()
     }
 
     override fun onStart() {
@@ -78,5 +77,15 @@ class MainActivity : Activity(), View.OnClickListener {
             R.id.addElementBtn -> addEntryToFireStore()
             R.id.readElementBtn -> readEntryFromFireStore()
         }
+    }
+
+    fun setupListener() {
+        val ref = db.collection("users")
+        ref.addSnapshotListener(EventListener<QuerySnapshot> { snapshot, e ->
+            if (e != null) {
+                Log.w(TAG, "Listen failed.", e)
+                return@EventListener
+            }
+        })
     }
 }
