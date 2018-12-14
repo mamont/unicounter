@@ -15,15 +15,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 
-import kotlinx.android.synthetic.main.activity_google_sign_in.detail
-import kotlinx.android.synthetic.main.activity_google_sign_in.disconnectButton
-import kotlinx.android.synthetic.main.activity_google_sign_in.main_layout
-import kotlinx.android.synthetic.main.activity_google_sign_in.signInButton
-import kotlinx.android.synthetic.main.activity_google_sign_in.signOutAndDisconnect
-import kotlinx.android.synthetic.main.activity_google_sign_in.signOutButton
-import kotlinx.android.synthetic.main.activity_google_sign_in.status
 import android.app.ProgressDialog
-
+import kotlinx.android.synthetic.main.activity_google_sign_in.*
 
 
 /**
@@ -152,13 +145,16 @@ class GoogleSignInActivity : Activity(), View.OnClickListener {
     private fun updateUI(user: FirebaseUser?) {
         hideProgressDialog()
         if (user != null) {
-            //status.text = getString(R.string.google_status_fmt, user.email)
-            //detail.text = getString(R.string.firebase_status_fmt, user.uid)
+            status.text = user.email // getString(R.string.google_status_fmt, user.email)
+            detail.text = user.uid // getString(R.string.firebase_status_fmt, user.uid)
 
             signInButton.visibility = View.GONE
             signOutAndDisconnect.visibility = View.VISIBLE
+
+            val ganesh = Intent(this, MainActivity::class.java)
+            startActivity(ganesh)
         } else {
-            //status.setText(R.string.signed_out)
+            status.text = "signed out"
             detail.text = null
 
             signInButton.visibility = View.VISIBLE
