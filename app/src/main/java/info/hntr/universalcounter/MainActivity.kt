@@ -1,14 +1,21 @@
 package info.hntr.universalcounter
 
-import android.app.Activity
 import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Observer
 import com.google.firebase.firestore.*
+import info.hntr.universalcounter.models.Descriptor
+import info.hntr.universalcounter.models.WidgetsModel
+import info.hntr.universalcounter.views.CounterFragment
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : Activity(), View.OnClickListener {
+import androidx.lifecycle.ViewModelProvider
+
+class MainActivity : FragmentActivity(), View.OnClickListener {
 
     private lateinit var db : FirebaseFirestore
 
@@ -23,14 +30,18 @@ class MainActivity : Activity(), View.OnClickListener {
         val settings = FirebaseFirestoreSettings.Builder()
             .setTimestampsInSnapshotsEnabled(true)
             .build()
-        db.setFirestoreSettings(settings)
+        db.firestoreSettings = settings
 
         setupListener()
         setupRxSource()
-    }
 
-    override fun onStart() {
-        super.onStart()
+
+        val model = ViewModelProvider.NewInstanceFactory().create(WidgetsModel::class.java)
+        model.getWidgets().observe(this, Observer<List<Descriptor>>{ descriptor ->
+            // update UI
+            Log.d(TAG, "xxx")
+        })
+
     }
 
     private fun addEntryToFireStore() {
@@ -84,7 +95,7 @@ class MainActivity : Activity(), View.OnClickListener {
         })
     }
 
-    fun setupRxSource() {
+    private fun setupRxSource() {
         val ref = db.collection("users")
         ref.observeValueSnapshot()
             .flatMapIterable { snapshot -> snapshot.documentChanges }
@@ -97,5 +108,20 @@ class MainActivity : Activity(), View.OnClickListener {
 
     private fun addWidget(doc : QueryDocumentSnapshot) {
         Log.d(TAG, "Got document: ${doc.id}")
+
+        //val widget = createWidget(doc)
+        //if (widget != null) {
+        //    val transaction = supportFragmentManager.beginTransaction()
+        //    transaction.add(R.id.widgetsLayout, widget)
+        //    transaction.commit()
+        //}
     }
+
+    private fun createWidget(doc : QueryDocumentSnapshot) : Fragment? {
+        return when(doc.get("type")) {
+            //"counter" -> CounterFragment.newInstance("a", "b")
+            else -> CounterFragment.newInstance("a", "b")
+        }
+    }
+
 }
