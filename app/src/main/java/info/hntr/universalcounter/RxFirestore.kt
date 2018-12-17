@@ -6,20 +6,6 @@ import com.google.firebase.firestore.*
 
 import io.reactivex.Observable
 
-class RxFirestore {
-    enum class EventType {
-        ADDED,
-        MOVED,
-        CHANGED,
-        REMOVED
-    }
-    class Event(
-        val type: EventType,
-        val snapshot: QuerySnapshot,
-        val previousChildName: String? = null
-    ) {}
-}
-
 fun Query.observeValueSnapshot(): Observable<QuerySnapshot> {
     return Observable.create { emitter ->
         addSnapshotListener { snapshot, error ->
@@ -31,4 +17,3 @@ fun Query.observeValueSnapshot(): Observable<QuerySnapshot> {
         }
     }
 }
-
