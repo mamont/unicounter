@@ -1,127 +1,135 @@
 package info.hntr.universalcounter
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
-import com.google.firebase.firestore.*
 import info.hntr.universalcounter.models.Descriptor
 import info.hntr.universalcounter.models.WidgetsModel
 import info.hntr.universalcounter.views.CounterFragment
-import kotlinx.android.synthetic.main.activity_main.*
 
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
+import android.view.ViewGroup
+import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
+import java.util.*
+
+import kotlinx.android.synthetic.main.activity_main.*
+
 
 class MainActivity : FragmentActivity(), View.OnClickListener {
-
-    private lateinit var db : FirebaseFirestore
+    private var counters: List<Descriptor> = ArrayList()
+    private lateinit var model: WidgetsModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         addElementBtn.setOnClickListener(this)
-        readElementBtn.setOnClickListener(this)
+        removeElementBtn.setOnClickListener(this)
 
-        db = FirebaseFirestore.getInstance()
-        val settings = FirebaseFirestoreSettings.Builder()
-            .setTimestampsInSnapshotsEnabled(true)
-            .build()
-        db.firestoreSettings = settings
+        val countersRecyclerView = findViewById<RecyclerView>(R.id.countersView)
+        countersRecyclerView.layoutManager = LinearLayoutManager(parent)
 
-        setupListener()
-        setupRxSource()
+        val countersAdapter = CountersAdapter()
+        countersRecyclerView.adapter = countersAdapter
 
+        model = ViewModelProvider.NewInstanceFactory().create(WidgetsModel::class.java)
+        model.getWidgets().observe(this, Observer<List<Descriptor>>{ descriptors ->
 
-        val model = ViewModelProvider.NewInstanceFactory().create(WidgetsModel::class.java)
-        model.getWidgets().observe(this, Observer<List<Descriptor>>{ descriptor ->
-            // update UI
-            Log.d(TAG, "xxx")
+            val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+                override fun getOldListSize() : Int {
+                    return counters.size
+                }
+                override fun getNewListSize() : Int {
+                    return descriptors.size
+                }
+
+                override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) : Boolean {
+                    return counters[oldItemPosition].id == descriptors[newItemPosition].id
+                }
+
+                override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) : Boolean {
+                    return counters[oldItemPosition].id == descriptors[newItemPosition].id
+                }
+            })
+
+            diffResult.dispatchUpdatesTo(countersAdapter)
+            counters = descriptors
         })
 
+        //model.init()
     }
 
     private fun addEntryToFireStore() {
-        val entry = HashMap<String, Any>()
-        entry.put("first", "Mi")
-        entry.put("last", "Tor")
-        entry.put("born", 2012)
-
-        db.collection("users")
-            .add(entry)
-            .addOnSuccessListener { documentReference ->
-                Log.d(TAG, "xxxx")
-            }
-            .addOnFailureListener { e ->
-                Log.w(TAG, "Error writing document", e)
-            }
+        model.addCounter(Descriptor("zzz1"))
     }
 
-    private fun readEntryFromFireStore() {
-        db.collection("users")
-            .get()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val document = task.result
-                    if (document != null) {
-                        Log.d(TAG, "DocumentSnapshot data: " + task.result)
-                    } else {
-                        Log.d(TAG, "No such document")
-                    }
-                } else {
-                    Log.d(TAG, "get failed with ", task.exception)
-                }
-            }
+    private fun removeEntryFromFireStore() {
+        // nothing
     }
 
     override fun onClick(v: View) {
         val i = v.id
         when (i) {
             R.id.addElementBtn -> addEntryToFireStore()
-            R.id.readElementBtn -> readEntryFromFireStore()
+            R.id.removeElementBtn -> removeEntryFromFireStore()
         }
     }
 
-    fun setupListener() {
-        val ref = db.collection("users")
-        ref.addSnapshotListener(EventListener<QuerySnapshot> { snapshot, e ->
-            if (e != null) {
-                Log.w(TAG, "Listen failed.", e)
-                return@EventListener
-            }
-        })
-    }
-
-    private fun setupRxSource() {
-        val ref = db.collection("users")
-        ref.observeValueSnapshot()
-            .flatMapIterable { snapshot -> snapshot.documentChanges }
-            .subscribe {
-                x -> when(x.type) {
-                    DocumentChange.Type.ADDED -> addWidget(x.document)
-                }
-            }
-    }
-
-    private fun addWidget(doc : QueryDocumentSnapshot) {
-        Log.d(TAG, "Got document: ${doc.id}")
-
-        //val widget = createWidget(doc)
-        //if (widget != null) {
-        //    val transaction = supportFragmentManager.beginTransaction()
-        //    transaction.add(R.id.widgetsLayout, widget)
-        //    transaction.commit()
+    private fun createWidget(doc : Any) : Fragment? {
+        //return when(doc.get("type")) {
+        //    //"counter" -> CounterFragment.newInstance("a", "b")
+        //    else -> CounterFragment.newInstance("a", "b")
         //}
+        return CounterFragment.newInstance("a", "b")
     }
 
-    private fun createWidget(doc : QueryDocumentSnapshot) : Fragment? {
-        return when(doc.get("type")) {
-            //"counter" -> CounterFragment.newInstance("a", "b")
-            else -> CounterFragment.newInstance("a", "b")
+
+    internal inner class CountersAdapter : RecyclerView.Adapter<CountersAdapter.CounterViewHolder>() {
+
+        init {
+            Log.d("CountersAdapter", "Freakin adapter")
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CounterViewHolder {
+            // val itemView = LayoutInflater.from(parent.context).inflate(R.layout.fragment_counter, parent, false)
+            val itemView = TextView(parent.context)
+            itemView.text = "aaa"
+            return CounterViewHolder(itemView)
+        }
+
+        override fun onBindViewHolder(holder: CounterViewHolder, position: Int) {
+            val counterDescriptor = counters.get(position)
+            //holder.nameTextView.setText(todo.getName())
+            //holder.dateTextView.setText(Date(todo.getDate()).toString())
+        }
+
+        override fun getItemCount(): Int {
+            return counters.size
+        }
+
+        inner class CounterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            //val nameTextView: TextView
+            //val dateTextView: TextView
+
+            //init {
+                //nameTextView = itemView.findViewById(R.id.tvName)
+                //dateTextView = itemView.findViewById(R.id.tvDate)
+                //val btnDelete = itemView.findViewById<View>(R.id.btnDelete)
+                //btnDelete.setOnClickListener {
+                //    val pos = adapterPosition
+                //    val todo = mTodos.get(pos)
+                //    mTodosViewModel.removeTodo(todo.getId())
+                //}
+            //}
+
         }
     }
+
 
 }

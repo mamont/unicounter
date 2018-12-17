@@ -2,7 +2,7 @@
 
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
+        xmlns:app="http://schemas.android.com/apk/res-auto" android:orientation="vertical"
         android:layout_width="match_parent" android:layout_height="match_parent">
     <Button
             android:text="Add Element"
@@ -11,10 +11,8 @@
     <Button
             android:text="Read Element"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:id="@+id/readElementBtn"/>
-    <LinearLayout
-            android:orientation="vertical"
+            android:layout_height="wrap_content" android:id="@+id/removeElementBtn"/>
+    <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="match_parent" android:id="@+id/widgetsLayout">
-    </LinearLayout>
+            android:layout_height="match_parent" android:id="@+id/countersView"/>
 </LinearLayout>
