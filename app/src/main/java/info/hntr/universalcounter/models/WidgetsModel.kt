@@ -1,16 +1,17 @@
 package info.hntr.universalcounter.models
 
+import android.app.Application
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.*
 import info.hntr.universalcounter.observeValueSnapshot
 import java.util.HashMap
 
 data class Descriptor(val id : String)
 
-class WidgetsModel : ViewModel() {
+class WidgetsModel(application: Application) : AndroidViewModel(application) {
     private val TAG = "WidgetsModel"
 
     private lateinit var descriptors: MutableLiveData<List<Descriptor>>
@@ -34,10 +35,10 @@ class WidgetsModel : ViewModel() {
         db.collection("users")
             .add(entry)
             .addOnSuccessListener { documentReference ->
-                Log.d(TAG, "xxxx")
+                Log.d(TAG, "Entry added successfully")
             }
             .addOnFailureListener { e ->
-                Log.w(TAG, "Error writing document", e)
+                Log.w(TAG, "Error while adding entry", e)
             }
     }
 
@@ -60,8 +61,8 @@ class WidgetsModel : ViewModel() {
     }
 
     private fun setupListener() {
-        val ref = db.collection("users")
-        ref.observeValueSnapshot()
+        db.collection("users")
+            .observeValueSnapshot()
             .flatMapIterable { snapshot -> snapshot.documentChanges }
             .subscribe {
                 x -> when(x.type) {

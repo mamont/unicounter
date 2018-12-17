@@ -3,8 +3,6 @@ package info.hntr.universalcounter
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import info.hntr.universalcounter.models.Descriptor
 import info.hntr.universalcounter.models.WidgetsModel
@@ -14,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import java.util.*
@@ -21,7 +20,7 @@ import java.util.*
 import kotlinx.android.synthetic.main.activity_main.*
 
 
-class MainActivity : FragmentActivity(), View.OnClickListener {
+class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var counters: List<Descriptor> = ArrayList()
     private lateinit var model: WidgetsModel
 
@@ -38,7 +37,9 @@ class MainActivity : FragmentActivity(), View.OnClickListener {
         val countersAdapter = CountersAdapter()
         countersRecyclerView.adapter = countersAdapter
 
-        model = ViewModelProvider.NewInstanceFactory().create(WidgetsModel::class.java)
+        model = ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(WidgetsModel::class.java)
+        //ViewModelProvider.of()
+        //model = ViewModelProvider.NewInstanceFactory().create()
         model.getWidgets().observe(this, Observer<List<Descriptor>>{ descriptors ->
 
             val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
@@ -61,8 +62,6 @@ class MainActivity : FragmentActivity(), View.OnClickListener {
             diffResult.dispatchUpdatesTo(countersAdapter)
             counters = descriptors
         })
-
-        //model.init()
     }
 
     private fun addEntryToFireStore() {
@@ -81,14 +80,13 @@ class MainActivity : FragmentActivity(), View.OnClickListener {
         }
     }
 
-    private fun createWidget(doc : Any) : Fragment? {
-        //return when(doc.get("type")) {
-        //    //"counter" -> CounterFragment.newInstance("a", "b")
-        //    else -> CounterFragment.newInstance("a", "b")
-        //}
-        return CounterFragment.newInstance("a", "b")
-    }
-
+    //private fun createWidget(doc : Any) : Fragment? {
+    //    //return when(doc.get("type")) {
+    //    //    //"counter" -> CounterFragment.newInstance("a", "b")
+    //    //    else -> CounterFragment.newInstance("a", "b")
+    //    //}
+    //    return CounterFragment.newInstance("a", "b")
+    //}
 
     internal inner class CountersAdapter : RecyclerView.Adapter<CountersAdapter.CounterViewHolder>() {
 
