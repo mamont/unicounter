@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import java.util.*
@@ -37,9 +39,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val countersAdapter = CountersAdapter()
         countersRecyclerView.adapter = countersAdapter
 
-        model = ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(WidgetsModel::class.java)
-        //ViewModelProvider.of()
-        //model = ViewModelProvider.NewInstanceFactory().create()
+        model = ViewModelProviders.of(this).get(WidgetsModel::class.java)
         model.getWidgets().observe(this, Observer<List<Descriptor>>{ descriptors ->
 
             val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
