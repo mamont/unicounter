@@ -1,8 +1,10 @@
 package info.hntr.universalcounter.views
 
-import android.content.Context
-import android.view.View
+import info.hntr.universalcounter.models.Descriptor
 
-abstract class BaseView(context: Context) : View(context) {
-    abstract val type: String
+
+interface BaseView {
+    val type: String
+
+    fun setDescriptor(descriptor: Descriptor)
 }

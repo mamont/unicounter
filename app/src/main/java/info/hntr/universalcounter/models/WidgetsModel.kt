@@ -9,7 +9,11 @@ import com.google.firebase.firestore.*
 import info.hntr.universalcounter.observeValueSnapshot
 import java.util.HashMap
 
-data class Descriptor(val id : String)
+interface Descriptor {
+    val id: String
+}
+
+data class CounterDescriptor(override val id : String, val value: Int) : Descriptor
 
 class WidgetsModel(application: Application) : AndroidViewModel(application) {
     private val TAG = "WidgetsModel"
@@ -74,7 +78,10 @@ class WidgetsModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun addElement(snapshot: QueryDocumentSnapshot) {
-        descriptorsRaw.add(Descriptor(snapshot.id))
+        //val id = snapshot.id
+        //val type = snapshot.data.get("type")
+
+        descriptorsRaw.add(CounterDescriptor(snapshot.id, 333))
     }
 
     private fun removeElement(snapshot: QueryDocumentSnapshot) {

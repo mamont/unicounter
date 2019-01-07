@@ -1,0 +1,19 @@
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto" android:orientation="vertical"
+        android:layout_width="match_parent" android:layout_height="match_parent">
+    <Button
+            android:id="@+id/sidespinner_view_previous"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/sidespinner_view_current_value"/>
+    <TextView
+            android:id="@+id/sidespinner_view_current_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="24sp" />
+    <Button
+            android:id="@+id/sidespinner_view_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+</LinearLayout>

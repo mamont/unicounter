@@ -6,17 +6,16 @@ import android.view.View
 import androidx.lifecycle.Observer
 import info.hntr.universalcounter.models.Descriptor
 import info.hntr.universalcounter.models.WidgetsModel
-import info.hntr.universalcounter.views.CounterFragment
 
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import info.hntr.universalcounter.models.CounterDescriptor
+import info.hntr.universalcounter.views.BaseView
+import info.hntr.universalcounter.views.CounterView
 import java.util.*
 
 import kotlinx.android.synthetic.main.activity_main.*
@@ -65,7 +64,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun addEntryToFireStore() {
-        model.addCounter(Descriptor("zzz1"))
+        model.addCounter(CounterDescriptor("zzz1", 222))
     }
 
     private fun removeEntryFromFireStore() {
@@ -80,13 +79,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    //private fun createWidget(doc : Any) : Fragment? {
-    //    //return when(doc.get("type")) {
-    //    //    //"counter" -> CounterFragment.newInstance("a", "b")
-    //    //    else -> CounterFragment.newInstance("a", "b")
-    //    //}
-    //    return CounterFragment.newInstance("a", "b")
-    //}
 
     internal inner class CountersAdapter : RecyclerView.Adapter<CountersAdapter.CounterViewHolder>() {
 
@@ -94,17 +86,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             Log.d("CountersAdapter", "Freakin adapter")
         }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CounterViewHolder {
-            // val itemView = LayoutInflater.from(parent.context).inflate(R.layout.fragment_counter, parent, false)
-            val itemView = TextView(parent.context)
-            itemView.text = "aaa"
+        override fun onCreateViewHolder(parent: ViewGroup, position: Int): CounterViewHolder {
+            val itemView = CounterView(parent.context)
             return CounterViewHolder(itemView)
         }
 
         override fun onBindViewHolder(holder: CounterViewHolder, position: Int) {
-            val counterDescriptor = counters.get(position)
-            //holder.nameTextView.setText(todo.getName())
-            //holder.dateTextView.setText(Date(todo.getDate()).toString())
+            val descriptor = counters.get(position)
+            holder.update(descriptor)
         }
 
         override fun getItemCount(): Int {
@@ -126,6 +115,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 //}
             //}
 
+            fun update(descriptor: Descriptor) {
+                (itemView as BaseView).setDescriptor(descriptor)
+            }
         }
     }
 
